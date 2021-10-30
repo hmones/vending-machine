@@ -1,19 +1,19 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\DepositController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::resource('users', UserController::class)->only('store');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('users', UserController::class)->except(['store', 'edit', 'create']);
+    Route::resource('products', ProductController::class)->except(['edit', 'create']);
+    Route::post('deposit', [DepositController::class, 'store'])->name('deposit');
+    Route::delete('reset', [DepositController::class, 'destroy'])->name('reset');
+    Route::post('buy', [OrderController::class, 'store'])->name('buy');
 });
+
+
