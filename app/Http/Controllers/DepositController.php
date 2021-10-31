@@ -2,84 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DepositStore;
+use App\Http\Resources\UserResource;
 use App\Models\Deposit;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class DepositController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct()
     {
-        //
+        $this->middleware('can:delete,App\Model\Deposit')->only('destroy');
+        $this->middleware('can:create,App\Model\Deposit')->only('store');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(DepositStore $request): JsonResponse
     {
-        //
+        $user = auth()->user();
+        $deposit = Deposit::create($request->safe()->toArray() + ['user_id' => $user->id]);
+        $user->update(['deposit' => ($user->deposit + $request->amount)]);
+
+        return response()->json($deposit->toArray(), JsonResponse::HTTP_CREATED);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function destroy(): JsonResponse
     {
-        //
-    }
+        Deposit::where('user_id', auth()->id())->delete();
+        auth()->user()->update(['deposit' => 0]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Deposit  $deposit
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Deposit $deposit)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Deposit  $deposit
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Deposit $deposit)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Deposit  $deposit
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Deposit $deposit)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Deposit  $deposit
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Deposit $deposit)
-    {
-        //
+        return response()->json(new UserResource(auth()->user()));
     }
 }

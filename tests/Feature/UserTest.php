@@ -49,7 +49,7 @@ class UserTest extends TestCase
         Arr::forget($this->userData, 'password');
 
         $this->postJson(route('users.store'), $this->userData)
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     }
 
@@ -58,7 +58,7 @@ class UserTest extends TestCase
         data_set($this->userData, 'deposit', 1000);
 
         $this->postJson(route('users.store'), $this->userData)
-            ->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertUnprocessable()
             ->assertJsonValidationErrors('deposit');
     }
 
@@ -80,20 +80,49 @@ class UserTest extends TestCase
             ->assertJson((new UserResource($users->last()))->resolve());
     }
 
-    public function test_a_user_can_update_only_their_data(): void
-    {}
+    public function test_a_user_can_update_their_data(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)
+            ->putJson(route('users.update', $user), ['password' => 'testingPassword', 'username' => 'testUsername'])
+            ->assertOk()
+            ->assertJson(['id' => $user->id, 'username' => 'testUsername']);
+        $this->assertEquals($user->refresh()->username, 'testUsername');
+    }
 
     public function test_a_user_can_not_update_others_accounts(): void
-    {}
+    {
+        $users = User::factory()->count(2)->create();
+        $this->actingAs($users->first())
+            ->putJson(route('users.update', $users->last()), ['password' => 'testingPassword', 'username' => 'testUsername'])
+            ->assertForbidden();
+        $this->assertNotEquals($users->last()->refresh()->username, 'testUsername');
+    }
 
     public function test_no_user_can_update_deposit_value(): void
-    {}
+    {
+        $user = User::factory()->create(['deposit' => 0]);
+        $this->actingAs($user)
+            ->putJson(route('users.update', $user), ['deposit' => 1000])
+            ->assertUnprocessable();
+        $this->assertEquals(0, $user->refresh()->deposit);
+    }
 
     public function test_a_user_can_delete_their_account(): void
-    {}
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)
+            ->deleteJson(route('users.destroy', $user))
+            ->assertStatus(Response::HTTP_NO_CONTENT);
+        $this->assertNull(User::first());
+    }
 
     public function test_a_user_can_not_delete_others_accounts(): void
-    {}
-
-
+    {
+        $users = User::factory()->count(2)->create();
+        $this->actingAs($users->first())
+            ->deleteJson(route('users.destroy', $users->last()))
+            ->assertForbidden();
+        $this->assertEquals(2, User::count());
+    }
 }

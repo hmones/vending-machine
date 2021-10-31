@@ -11,6 +11,11 @@ use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:update,user')->only(['update', 'destroy']);
+    }
+
     public function index(): JsonResponse
     {
         return response()->json(UserResource::collection(User::limit(100)->latest()->get()));
@@ -30,8 +35,9 @@ class UserController extends Controller
 
     public function update(User $user, UserUpdate $request): JsonResponse
     {
+        $user->update($request->safe()->except('createToken'));
 
-        return response()->json($user);
+        return response()->json(new UserResource($user));
     }
 
     public function destroy(User $user): JsonResponse

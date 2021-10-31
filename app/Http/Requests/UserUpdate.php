@@ -2,29 +2,27 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserUpdate extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return false;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
-            //
+            'username'    => 'sometimes|unique:users,username,' . auth()->user()->username,
+            'role'        => ['sometimes', Rule::in(User::ROLES)],
+            'deposit'     => 'prohibited',
+            'password'    => 'sometimes|min:8',
+            'createToken' => 'required|boolean'
         ];
+    }
+
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'createToken' => true
+        ]);
     }
 }

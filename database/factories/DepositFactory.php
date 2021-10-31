@@ -9,7 +9,7 @@ class DepositFactory extends Factory
     public function definition(): array
     {
         return [
-            'amount' => 0.05 * $this->faker->numberBetween(0, 10000)
+            'amount' => $this->faker->randomElement([0.05, 0.1, 0.2, 0.5, 1])
         ];
     }
 }

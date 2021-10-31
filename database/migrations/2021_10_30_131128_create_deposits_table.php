@@ -10,6 +10,7 @@ class CreateDepositsTable extends Migration
     {
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('user_id');
             $table->float('amount');
             $table->timestamps();
         });
