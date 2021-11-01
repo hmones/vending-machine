@@ -15,17 +15,14 @@ class OrderController extends Controller
         $this->middleware('can:create,App\Models\Order');
     }
 
-    public function store(OrderStore $request)
+    public function store(OrderStore $request): JsonResponse
     {
         $product = Product::findOrFail($request->input('product_id'));
         $amount = $request->input('amount', 0);
+        $message = $this->checkOrderIssues($amount, $product);
 
-        if ($request->input('amount') > $product->amount_available) {
-            return response()->json(['message' => 'The amount for product you specified is unavailable!'], JsonResponse::HTTP_FORBIDDEN);
-        }
-
-        if (($product->cost * $amount) > (float) auth()->user()->deposit) {
-            return response()->json(['message' => 'Please deposit more money into your account to order this product!'], JsonResponse::HTTP_FORBIDDEN);
+        if ($message) {
+            return response()->json(compact('message'), JsonResponse::HTTP_FORBIDDEN);
         }
 
         $order = Order::submitOrder($product, $amount);
@@ -35,5 +32,18 @@ class OrderController extends Controller
         }
 
         return response()->json(new OrderResource($order), JsonResponse::HTTP_CREATED);
+    }
+
+    protected function checkOrderIssues($amount, $product): ?string
+    {
+        if ($amount > $product->amount_available) {
+            return 'The amount for product you specified is unavailable!';
+        };
+
+        if(($product->cost * $amount) > (float) auth()->user()->deposit) {
+            return 'Please deposit more money into your account to order this product!';
+        };
+
+        return false;
     }
 }

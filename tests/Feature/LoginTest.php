@@ -10,12 +10,12 @@ class LoginTest extends TestCase
 {
     use DatabaseTransactions;
 
-    protected const PASSWORD = '12345678';
+    protected const TEST_PASS = '12345678';
     protected $user;
 
     public function test_user_can_login_and_generate_token(): void
     {
-        $this->postJson(route('login'), ['username' => $this->user->username, 'password' => self::PASSWORD])
+        $this->postJson(route('login'), ['username' => $this->user->username, 'password' => self::TEST_PASS])
             ->assertCreated()
             ->assertJsonStructure(['message', 'token'])
             ->assertJson(['message' => 'Success']);
@@ -38,7 +38,7 @@ class LoginTest extends TestCase
     {
         $this->user->createToken($this->user->role)->plainTextToken;
 
-        $this->postJson(route('login'), ['username' => $this->user->username, 'password' => self::PASSWORD])
+        $this->postJson(route('login'), ['username' => $this->user->username, 'password' => self::TEST_PASS])
             ->assertCreated()
             ->assertJsonStructure(['message', 'token'])
             ->assertJson(['message' => 'There is already an active session using your account']);
@@ -62,6 +62,6 @@ class LoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create(['password' => self::PASSWORD]);
+        $this->user = User::factory()->create(['password' => self::TEST_PASS]);
     }
 }
