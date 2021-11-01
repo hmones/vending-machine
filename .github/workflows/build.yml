@@ -1,0 +1,50 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  phpunit:
+    name: Feature tests for Laravel
+    runs-on: ubuntu-latest
+    container:
+      image: kirschbaumdevelopment/laravel-test-runner:8.0
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: Install composer dependencies
+        run: composer install --no-scripts
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.ci .env
+          php artisan key:generate
+          php artisan migrate:fresh
+      - name: Execute tests
+        run: php artisan test
+      - name: Execute clean code test
+        run: ./vendor/bin/phpstan analyse
