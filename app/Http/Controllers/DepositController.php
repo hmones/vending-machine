@@ -23,7 +23,7 @@ class DepositController extends Controller
 
         return response()->json([
             'amount' => $request->amount,
-            'total'  => $deposit->user->deposit
+            'total'  => $deposit->user->deposit,
         ], JsonResponse::HTTP_CREATED);
     }
 
