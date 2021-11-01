@@ -20,14 +20,14 @@ class OrderResource extends JsonResource
                 '20_cents'  => $this->getChangeAmount($change, 0.2),
                 '10_cents'  => $this->getChangeAmount($change, 0.1),
                 '5_cents'   => $this->getChangeAmount($change, 0.05),
-            ]
+            ],
         ];
     }
 
     protected function getChangeAmount(float &$amount, float $change): int
     {
         $amount = $amount + 0.0001;
-        $result = ($amount - fmod($amount, $change))/$change;
+        $result = ($amount - fmod($amount, $change)) / $change;
         $amount = fmod($amount, $change);
 
         return (int) $result;

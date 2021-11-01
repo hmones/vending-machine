@@ -29,7 +29,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'deposit'  => 'float'
+        'deposit'  => 'float',
     ];
 
     public function setPasswordAttribute($value): void

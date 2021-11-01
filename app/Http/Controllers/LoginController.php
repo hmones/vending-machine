@@ -15,7 +15,7 @@ class LoginController extends Controller
 
         return response()->json([
             'message' => $isLogged ? 'There is already an active session using your account' : 'Success',
-            'token'   => $token
+            'token'   => $token,
         ], JsonResponse::HTTP_CREATED);
     }
 }

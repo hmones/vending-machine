@@ -10,7 +10,7 @@ class DatabaseSeeder extends Seeder
     {
         /**
          * Currently, there's no need for seeders
-         * but later will create database seeders for User, Products
+         * but later will create database seeders for User and Products.
          */
     }
 }

@@ -13,7 +13,7 @@ class ProductFactory extends Factory
             'product_name'     => $this->faker->name,
             'seller_id'        => User::factory()->seller(),
             'amount_available' => $this->faker->numberBetween(0, 100),
-            'cost'             => $this->faker->randomFloat(2, 0, 10)
+            'cost'             => $this->faker->randomFloat(2, 0, 10),
         ];
     }
 }

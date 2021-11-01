@@ -11,7 +11,7 @@ class DepositStore extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', Rule::in(Deposit::ACCEPTED_AMOUNTS)]
+            'amount' => ['required', Rule::in(Deposit::ACCEPTED_AMOUNTS)],
         ];
     }
 }

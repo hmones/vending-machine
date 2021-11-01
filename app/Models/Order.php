@@ -18,10 +18,10 @@ class Order extends Model
         DB::beginTransaction();
 
         $order = self::create(['user_id' => auth()->id(), 'product_id' => $product->id, 'amount' => $amount]);
-        $userUpdate = auth()->user()->update(['deposit' => ((float)auth()->user()->deposit - ($product->cost * $amount))]);
+        $userUpdate = auth()->user()->update(['deposit' => ((float) auth()->user()->deposit - ($product->cost * $amount))]);
         $productUpdate = $product->update(['amount_available' => $product->amount_available - $amount]);
 
-        if(!$order || !$userUpdate || !$productUpdate) {
+        if (! $order || ! $userUpdate || ! $productUpdate) {
             DB::rollBack();
 
             return null;

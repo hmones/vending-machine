@@ -25,7 +25,7 @@ class LoginTest extends TestCase
     {
         $token = $this->user->createToken($this->user->role)->plainTextToken;
 
-        $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+        $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson(route('logout'))
             ->assertOk()
             ->assertJson(['message' => 'You have been logged out of your current session, your token is no longer valid']);
@@ -51,7 +51,7 @@ class LoginTest extends TestCase
 
         $this->assertEquals(2, $this->user->tokens()->count());
 
-        $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+        $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson(route('logout.all'))
             ->assertOk()
             ->assertJson(['message' => 'You have been logged out of all active sessions']);
