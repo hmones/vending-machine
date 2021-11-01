@@ -14,15 +14,7 @@ class UserStore extends FormRequest
             'username'    => 'required|unique:users,username',
             'role'        => ['required', Rule::in(User::ROLES)],
             'deposit'     => 'prohibited',
-            'password'    => 'required|min:8',
-            'createToken' => 'required|boolean'
+            'password'    => 'required|min:8'
         ];
-    }
-
-    public function prepareForValidation(): void
-    {
-        $this->merge([
-            'createToken' => true
-        ]);
     }
 }

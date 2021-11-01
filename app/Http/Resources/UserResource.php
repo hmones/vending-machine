@@ -14,8 +14,7 @@ class UserResource extends JsonResource
             'role'       => $this->role,
             'deposit'    => (float)$this->deposit,
             'created_at' => optional($this->created_at)->toJson(),
-            'updated_at' => optional($this->updated_at)->toJson(),
-            'token'      => $this->when($request->createToken, $this->createToken($this->role)->plainTextToken)
+            'updated_at' => optional($this->updated_at)->toJson()
         ];
     }
 }

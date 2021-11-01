@@ -23,7 +23,7 @@ class UserController extends Controller
 
     public function store(UserStore $request):JsonResponse
     {
-        $user = User::create($request->safe()->except('createToken'));
+        $user = User::create($request->safe()->toArray());
 
         return response()->json(new UserResource($user), Response::HTTP_CREATED);
     }
@@ -35,7 +35,7 @@ class UserController extends Controller
 
     public function update(User $user, UserUpdate $request): JsonResponse
     {
-        $user->update($request->safe()->except('createToken'));
+        $user->update($request->safe()->toArray());
 
         return response()->json(new UserResource($user));
     }

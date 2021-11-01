@@ -14,15 +14,7 @@ class UserUpdate extends FormRequest
             'username'    => 'sometimes|unique:users,username,' . auth()->user()->username,
             'role'        => ['sometimes', Rule::in(User::ROLES)],
             'deposit'     => 'prohibited',
-            'password'    => 'sometimes|min:8',
-            'createToken' => 'required|boolean'
+            'password'    => 'sometimes|min:8'
         ];
-    }
-
-    public function prepareForValidation(): void
-    {
-        $this->merge([
-            'createToken' => true
-        ]);
     }
 }
