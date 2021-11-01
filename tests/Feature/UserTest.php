@@ -19,18 +19,22 @@ class UserTest extends TestCase
         'role'     => 'seller',
     ];
 
+    protected const STORE_ROUTE = 'users.store';
+    protected const DESTROY_ROUTE = 'users.destroy';
+    protected const UPDATE_ROUTE = 'users.update';
+
     public function test_non_authorized_users_can_not_update_delete_or_show_users(): void
     {
         $this->getJson(route('users.index'))->assertUnauthorized();
         $user = User::factory()->create();
         $this->getJson(route('users.show', $user))->assertUnauthorized();
-        $this->deleteJson(route('users.destroy', $user))->assertUnauthorized();
-        $this->putJson(route('users.update', $user), [])->assertUnauthorized();
+        $this->deleteJson(route(self::DESTROY_ROUTE, $user))->assertUnauthorized();
+        $this->putJson(route(self::UPDATE_ROUTE, $user), [])->assertUnauthorized();
     }
 
     public function test_seller_user_can_be_created_successfully_without_authentication(): void
     {
-        $this->postJson(route('users.store'), $this->userData)
+        $this->postJson(route(self::STORE_ROUTE), $this->userData)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(User::first()->toArray());
     }
@@ -39,7 +43,7 @@ class UserTest extends TestCase
     {
         data_set($this->userData, 'role', User::BUYER);
 
-        $this->postJson(route('users.store'), $this->userData)
+        $this->postJson(route(self::STORE_ROUTE), $this->userData)
             ->assertStatus(Response::HTTP_CREATED)
             ->assertJson(User::first()->toArray());
     }
@@ -48,7 +52,7 @@ class UserTest extends TestCase
     {
         Arr::forget($this->userData, 'password');
 
-        $this->postJson(route('users.store'), $this->userData)
+        $this->postJson(route(self::STORE_ROUTE), $this->userData)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     }
@@ -57,7 +61,7 @@ class UserTest extends TestCase
     {
         data_set($this->userData, 'deposit', 1000);
 
-        $this->postJson(route('users.store'), $this->userData)
+        $this->postJson(route(self::STORE_ROUTE), $this->userData)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('deposit');
     }
@@ -84,7 +88,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user)
-            ->putJson(route('users.update', $user), ['password' => 'testingPassword', 'username' => 'testUsername'])
+            ->putJson(route(self::UPDATE_ROUTE, $user), ['password' => 'testingPassword', 'username' => 'testUsername'])
             ->assertOk()
             ->assertJson(['id' => $user->id, 'username' => 'testUsername']);
         $this->assertEquals($user->refresh()->username, 'testUsername');
@@ -94,7 +98,7 @@ class UserTest extends TestCase
     {
         $users = User::factory()->count(2)->create();
         $this->actingAs($users->first())
-            ->putJson(route('users.update', $users->last()), ['password' => 'testingPassword', 'username' => 'testUsername'])
+            ->putJson(route(self::UPDATE_ROUTE, $users->last()), ['password' => 'testingPassword', 'username' => 'testUsername'])
             ->assertForbidden();
         $this->assertNotEquals($users->last()->refresh()->username, 'testUsername');
     }
@@ -103,7 +107,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['deposit' => 0]);
         $this->actingAs($user)
-            ->putJson(route('users.update', $user), ['deposit' => 1000])
+            ->putJson(route(self::UPDATE_ROUTE, $user), ['deposit' => 1000])
             ->assertUnprocessable();
         $this->assertEquals(0, $user->refresh()->deposit);
     }
@@ -112,7 +116,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $this->actingAs($user)
-            ->deleteJson(route('users.destroy', $user))
+            ->deleteJson(route(self::DESTROY_ROUTE, $user))
             ->assertStatus(Response::HTTP_NO_CONTENT);
         $this->assertNull(User::first());
     }
@@ -121,7 +125,7 @@ class UserTest extends TestCase
     {
         $users = User::factory()->count(2)->create();
         $this->actingAs($users->first())
-            ->deleteJson(route('users.destroy', $users->last()))
+            ->deleteJson(route(self::DESTROY_ROUTE, $users->last()))
             ->assertForbidden();
         $this->assertEquals(2, User::count());
     }
