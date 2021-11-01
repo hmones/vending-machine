@@ -61,7 +61,6 @@ class ProductTest extends TestCase
             'amount_available' => 2,
             'cost'             => 2.3
         ];
-        dump($seller1->id);
         $this->actingAs($seller1)->postJson(route('products.store'), $data)->assertCreated();
         $this->assertEquals($seller1->id, Product::first()->seller_id);
     }
