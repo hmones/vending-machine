@@ -38,11 +38,11 @@ class OrderController extends Controller
     {
         if ($amount > $product->amount_available) {
             return 'The amount for product you specified is unavailable!';
-        };
+        }
 
         if(($product->cost * $amount) > (float) auth()->user()->deposit) {
             return 'Please deposit more money into your account to order this product!';
-        };
+        }
 
         return false;
     }

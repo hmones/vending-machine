@@ -8,6 +8,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        //TODO Create database seeders for User, Products
+        /**
+         * Currently, there's no need for seeders
+         * but later will create database seeders for User, Products
+         */
     }
 }

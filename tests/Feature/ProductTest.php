@@ -11,6 +11,10 @@ class ProductTest extends TestCase
 {
     use DatabaseTransactions;
 
+    protected const STORE_ROUTE = 'products.store';
+    protected const DESTROY_ROUTE = 'products.destroy';
+    protected const UPDATE_ROUTE = 'products.update';
+
     public function test_anyone_can_list_products(): void
     {
         $products = Product::factory()->count(5)->create();
@@ -35,7 +39,7 @@ class ProductTest extends TestCase
             'cost'             => 2.3
         ];
         $seller = User::factory()->seller()->create();
-        $this->actingAs($seller)->postJson(route('products.store'), $data)->assertCreated();
+        $this->actingAs($seller)->postJson(route(self::STORE_ROUTE), $data)->assertCreated();
         $this->assertDatabaseHas('products', $data + ['seller_id' => $seller->id]);
     }
 
@@ -47,7 +51,7 @@ class ProductTest extends TestCase
         ];
         $seller = User::factory()->seller()->create();
         $this->actingAs($seller)
-            ->postJson(route('products.store'), $data)
+            ->postJson(route(self::STORE_ROUTE), $data)
             ->assertUnprocessable()
             ->assertJsonValidationErrors('amount_available');
     }
@@ -61,7 +65,7 @@ class ProductTest extends TestCase
             'amount_available' => 2,
             'cost'             => 2.3
         ];
-        $this->actingAs($seller1)->postJson(route('products.store'), $data)->assertCreated();
+        $this->actingAs($seller1)->postJson(route(self::STORE_ROUTE), $data)->assertCreated();
         $this->assertEquals($seller1->id, Product::first()->seller_id);
     }
 
@@ -69,15 +73,15 @@ class ProductTest extends TestCase
     {
         $this->postJson(route('products.store'), [])->assertUnauthorized();
         $product = Product::factory()->create();
-        $this->deleteJson(route('products.destroy', $product))->assertUnauthorized();
-        $this->putJson(route('products.update', $product), [])->assertUnauthorized();
+        $this->deleteJson(route(self::DESTROY_ROUTE, $product))->assertUnauthorized();
+        $this->putJson(route(self::UPDATE_ROUTE, $product), [])->assertUnauthorized();
     }
 
     public function test_seller_can_update_their_product_details(): void
     {
         $product = Product::factory()->create(['product_name' => 'oldName']);
         $this->actingAs($product->seller)
-            ->putJson(route('products.update', $product), ['product_name' => 'newName'])
+            ->putJson(route(self::UPDATE_ROUTE, $product), ['product_name' => 'newName'])
             ->assertOk()
             ->assertJson(['product_name' => 'newName']);
     }
@@ -87,7 +91,7 @@ class ProductTest extends TestCase
         $product1 = Product::factory()->create(['product_name' => 'oldName']);
         $product2 = Product::factory()->create(['product_name' => 'oldName']);
         $this->actingAs($product1->seller)
-            ->putJson(route('products.update', $product2), ['product_name' => 'newName'])
+            ->putJson(route(self::UPDATE_ROUTE, $product2), ['product_name' => 'newName'])
             ->assertForbidden();
     }
 
@@ -96,7 +100,7 @@ class ProductTest extends TestCase
         $product = Product::factory()->create(['product_name' => 'oldName']);
         $seller = $product->seller;
         $this->actingAs($seller)
-            ->putJson(route('products.update', $product), ['seller_id' => null])
+            ->putJson(route(self::UPDATE_ROUTE, $product), ['seller_id' => null])
             ->assertOk();
         $this->assertEquals($seller->id, $product->refresh()->seller_id);
     }
@@ -105,7 +109,7 @@ class ProductTest extends TestCase
     {
         $product = Product::factory()->create(['product_name' => 'oldName']);
         $this->actingAs($product->seller)
-            ->deleteJson(route('products.destroy', $product))
+            ->deleteJson(route(self::DESTROY_ROUTE, $product))
             ->assertNoContent();
         $this->assertEquals(0, Product::count());
     }
@@ -115,7 +119,7 @@ class ProductTest extends TestCase
         $product = Product::factory()->create(['product_name' => 'oldName']);
         $seller = User::factory()->seller()->create();
         $this->actingAs($seller)
-            ->deleteJson(route('products.destroy', $product))
+            ->deleteJson(route(self::DESTROY_ROUTE, $product))
             ->assertForbidden();
         $this->assertEquals(1, Product::count());
     }
