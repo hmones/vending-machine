@@ -14,11 +14,11 @@ class Product extends Model
         'product_name',
         'seller_id',
         'amount_available',
-        'cost'
+        'cost',
     ];
 
     protected $casts = [
-        'cost' => 'decimal:2'
+        'cost' => 'decimal:2',
     ];
 
     public function seller(): BelongsTo

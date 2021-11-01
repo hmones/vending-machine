@@ -14,7 +14,7 @@ class UserStore extends FormRequest
             'username'    => 'required|unique:users,username',
             'role'        => ['required', Rule::in(User::ROLES)],
             'deposit'     => 'prohibited',
-            'password'    => 'required|min:8'
+            'password'    => 'required|min:8',
         ];
     }
 }

@@ -27,7 +27,7 @@ class OrderController extends Controller
 
         $order = Order::submitOrder($product, $amount);
 
-        if (!$order) {
+        if (! $order) {
             return response()->json(['message' => 'An error occurred while submitting your order, try again later!'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 
@@ -40,7 +40,7 @@ class OrderController extends Controller
             return 'The amount for product you specified is unavailable!';
         }
 
-        if(($product->cost * $amount) > (float) auth()->user()->deposit) {
+        if (($product->cost * $amount) > (float) auth()->user()->deposit) {
             return 'Please deposit more money into your account to order this product!';
         }
 

@@ -21,7 +21,10 @@ class DepositController extends Controller
         $deposit = Deposit::create($request->safe()->toArray() + ['user_id' => $user->id]);
         $user->update(['deposit' => ($user->deposit + $request->amount)]);
 
-        return response()->json($deposit->toArray(), JsonResponse::HTTP_CREATED);
+        return response()->json([
+            'amount' => $request->amount,
+            'total'  => $deposit->user->deposit,
+        ], JsonResponse::HTTP_CREATED);
     }
 
     public function destroy(): JsonResponse

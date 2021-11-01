@@ -16,13 +16,13 @@ class UserFactory extends Factory
             'role'           => $this->faker->randomElement(User::ROLES),
             'password'       => Hash::make('password'),
             'deposit'        => $this->faker->randomFloat(2, 0, 500),
-            'remember_token' => Str::random(10)
+            'remember_token' => Str::random(10),
         ];
     }
 
     public function seller(): Factory
     {
-        return $this->state(fn() => ['role' => User::SELLER]);
+        return $this->state(fn () => ['role' => User::SELLER]);
     }
 
     public function buyer(): Factory

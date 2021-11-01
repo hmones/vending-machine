@@ -11,7 +11,7 @@ class ProductStore extends FormRequest
         return [
             'product_name'     => 'required|string',
             'amount_available' => 'required|numeric',
-            'cost'             => 'required|numeric'
+            'cost'             => 'required|numeric',
         ];
     }
 }

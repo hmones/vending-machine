@@ -11,10 +11,10 @@ class UserUpdate extends FormRequest
     public function rules(): array
     {
         return [
-            'username'    => 'sometimes|unique:users,username,' . auth()->user()->username,
+            'username'    => 'sometimes|unique:users,username,'.auth()->user()->username,
             'role'        => ['sometimes', Rule::in(User::ROLES)],
             'deposit'     => 'prohibited',
-            'password'    => 'sometimes|min:8'
+            'password'    => 'sometimes|min:8',
         ];
     }
 }

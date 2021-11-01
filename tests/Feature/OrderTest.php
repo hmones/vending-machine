@@ -39,7 +39,7 @@ class OrderTest extends TestCase
                     '20_cents'  => 1,
                     '10_cents'  => 1,
                     '5_cents'   => 1,
-                ]
+                ],
             ]);
     }
 

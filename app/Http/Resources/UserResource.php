@@ -12,9 +12,9 @@ class UserResource extends JsonResource
             'id'         => $this->id,
             'username'   => $this->username,
             'role'       => $this->role,
-            'deposit'    => (float)$this->deposit,
+            'deposit'    => (float) $this->deposit,
             'created_at' => optional($this->created_at)->toJson(),
-            'updated_at' => optional($this->updated_at)->toJson()
+            'updated_at' => optional($this->updated_at)->toJson(),
         ];
     }
 }

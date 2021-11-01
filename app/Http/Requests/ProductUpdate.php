@@ -11,7 +11,7 @@ class ProductUpdate extends FormRequest
         return [
             'product_name'     => 'sometimes|string',
             'amount_available' => 'sometimes|numeric',
-            'cost'             => 'sometimes|numeric'
+            'cost'             => 'sometimes|numeric',
         ];
     }
 }

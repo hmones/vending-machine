@@ -21,7 +21,7 @@ class UserController extends Controller
         return response()->json(UserResource::collection(User::limit(100)->latest()->get()));
     }
 
-    public function store(UserStore $request):JsonResponse
+    public function store(UserStore $request): JsonResponse
     {
         $user = User::create($request->safe()->toArray());
 

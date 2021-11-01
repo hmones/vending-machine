@@ -36,7 +36,7 @@ class ProductTest extends TestCase
         $data = [
             'product_name'     => 'TestProduct',
             'amount_available' => 2,
-            'cost'             => 2.3
+            'cost'             => 2.3,
         ];
         $seller = User::factory()->seller()->create();
         $this->actingAs($seller)->postJson(route(self::STORE_ROUTE), $data)->assertCreated();
@@ -47,7 +47,7 @@ class ProductTest extends TestCase
     {
         $data = [
             'product_name'     => 'TestProduct',
-            'cost'             => 2.3
+            'cost'             => 2.3,
         ];
         $seller = User::factory()->seller()->create();
         $this->actingAs($seller)
@@ -63,7 +63,7 @@ class ProductTest extends TestCase
             'product_name'     => 'TestProduct',
             'seller_id'        => $seller2->id,
             'amount_available' => 2,
-            'cost'             => 2.3
+            'cost'             => 2.3,
         ];
         $this->actingAs($seller1)->postJson(route(self::STORE_ROUTE), $data)->assertCreated();
         $this->assertEquals($seller1->id, Product::first()->seller_id);
